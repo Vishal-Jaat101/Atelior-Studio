@@ -1,0 +1,126 @@
+# UX & Frontend Design Document
+**Atelier** — Multi-Agent Product Studio  
+**Version:** 0.1 · Companion to the PRD, System Architecture, and Tech Stack docs
+
+This document defines Atelier's own visual identity, layout guidelines, the UX design systems it generates for users, and the explicit "anti-generic design rubric" used to programmatically and visually check every page before release.
+
+---
+
+## 1. Atelier Visual Identity
+Atelier represents a premium digital craft workshop. The visual theme must look professional, precise, and modern, blending the utility of an IDE with the visual polish of a high-end design agency.
+
+### 1.1 Color Palette (Dark Mode First)
+Atelier is dark-themed by default to reduce eye strain and highlight colorful live site previews.
+* **Canvas Background:** HSL `240, 10%, 3.9%` (Deep Slate Black)
+* **Sidebar & Panels:** HSL `240, 10%, 6%` (Warm Charcoal) with border HSL `240, 5%, 15%`
+* **Card Overlays (Glassmorphic):** HSL `240, 10%, 10%, 0.6` with `backdrop-filter: blur(12px)`
+* **Primary Accent:** HSL `263, 70%, 50%` (Neon Violet) - representing AI reasoning and state flow
+* **Secondary Accent:** HSL `190, 90%, 45%` (Cyan) - representing asset loading and 3D rendering
+* **Status Colors:**
+  * **Success/Pass:** HSL `142, 70%, 45%` (Emerald)
+  * **Warning/Retry:** HSL `38, 92%, 50%` (Amber)
+  * **Danger/Failure:** HSL `0, 84%, 60%` (Coral Red)
+
+### 1.2 Typography
+* **Primary Brand & UI Font:** Inter or Outfit (Clean, geometric, premium readability)
+* **Code & Monospace Utility Font:** JetBrains Mono or Fira Code (For task rails, agent logs, and code views)
+* **Type scale:** Consistent baseline grid (4px increments), ranging from 12px (labels) to 32px (page headers).
+
+---
+
+## 2. Core Screen Layouts
+
+### 2.1 Screen 1: The Product Intake & Discovery Canvas
+An interactive onboarding interface that avoids typical forms.
+```
++--------------------------------------------------------------+
+| [A] ATELIER  [ Vintage Furniture Marketplace ]  [Living Brief]|
++--------------------------+-----------------------------------+
+|                          |                                   |
+|                          | BRIEF PROGRESS                    |
+|  DISCOVERY CHAT          | [===== 40% =============]         |
+|                          |                                   |
+|  Agent: Let's focus on   | TARGET AUDIENCE                   |
+|  your brand style. Which | - Mid-century modern collectors   |
+|  vibe matches best?      | - Premium buyers (budget: $$$)    |
+|                          |                                   |
+|  ( Elegant ) ( Rustic )  | CHOSEN PLATFORMS                  |
+|  ( Minimal ) ( Bold )    | - Desktop Web                     |
+|                          |                                   |
+|                          | NATIVE 3D INTEGRATION             |
+|  [ Type response...    ] | - Yes (3D product rotates on landing)|
+|                          |                                   |
++--------------------------+-----------------------------------+
+```
+* **Left Panel:** Chat interface with dynamic chip selection (collapsible for free-text).
+* **Right Panel:** The "Living Brief" updating in real-time using subtle transition slide-ins when items are locked.
+
+### 2.2 Screen 2: The Studio Canvas & Build Board
+The primary execution view where users watch the agent team construct the application.
+```
++--------------------------------------------------------------+
+| [A] ATELIER  [ Vintage Furniture Marketplace ]   [Deploy]    |
++--------------------+-----------------------------------------+
+|                    |                                         |
+| TASK TRACKER       | PREVIEW: Landing Page (CC Sneaker View) |
+| [/] Create tokens  | +-------------------------------------+ |
+| [x] DB Schema      | | Navigation     Cart (0)             | |
+| [ ] 3D Hero Embed  | |                                     | |
+| [ ] Checkout Flow  | |      [ SNEAKER ROTATES IN 3D ]      | |
+|                    | |                                     | |
+|                    | | Vintage Style. Modern Comfort.      | |
+|                    | +-------------------------------------+ |
+| LOGS               |                                         |
+| AssetAgent:        | [Edit Code] [Inspect Nodes]             |
+| Sourced CC model   |                                         |
++--------------------+-----------------------------------------+
+```
+* **Task Tracker Sidebar (Left):** Lists tasks with status marks (`[ ]`, `[/]`, `[x]`). Hovering over a task shows the agent log console output below.
+* **Main Sandbox Canvas (Right):** Full-screen preview of the generated web application, updating automatically via Hot Module Replacement (HMR) from the WebContainer sandbox.
+* **Visual Inspect Overlay:** User can click on any element of the live site preview to open a "Comment/Request Change" modal.
+
+---
+
+## 3. The "Anti-Generic Design" Rubric (Pillar 5)
+Every website generated by Atelier must pass this programmatic and layout rubric before it is displayed. This ensures the output does not resemble boilerplate Tailwind or shadcn templates.
+
+### 3.1 Layout & Grid Rules
+* **No "Standard Hero Block":** Do not output simple centered title-description-button layouts by default. Introduce offset typography, asymmetric grids, or signature hero backgrounds (e.g., layout patterns where a 3D canvas intersects text elements).
+* **No Default White/Flat Gray Boxes:** Grid cards must use intentional structural layers (e.g., borders with HSL-gradient strokes, micro-drop-shadows, or offset borders mimicking physical paper/cards).
+* **Content Spacing:** Minimum of `py-16` / `py-24` on landing sections to enforce breathable, premium whitespace. Avoid crowded lists.
+
+### 3.2 Color & Theme Rules
+* **Signature Color Dominance:** Generated palettes must strictly follow the `60-30-10` rule:
+  * **60% Base:** Background and base canvases (never pure `#ffffff` or `#000000`; must contain subtle warm or cool hues).
+  * **30% Structure:** Section headers, card backgrounds, borders, and main body text.
+  * **10% Accent:** Primary interactive cues, call-to-actions, and state indicators.
+* **Palette Critique:** Design Agents automatically reject palettes where the primary accent is a generic Tailwind color (e.g., `bg-blue-500`, `bg-green-600`) without complementary custom configurations.
+
+### 3.3 Typography Pairings
+* The system enforces pairing a structured serif or editorial display font (e.g., Playfair Display, Syne, Cabinet Grotesk) with a clean geometric sans-serif (e.g., Plus Jakarta Sans, Satoshi) for consumer brands. Monospace (e.g., DM Mono) is paired with clean sans-serif for developer/technical brands.
+
+---
+
+## 4. Accessibility Gate (WCAG 2.1 AA Enforced)
+No build passes the QA Agent stage unless it satisfies accessibility gates.
+
+* **Contrast Limits:** Body copy must have a minimum contrast of `4.5:1` against its background container. Headers must have a minimum contrast of `3:1`.
+* **Keyboard Navigation:**
+  * Every clickable item (`button`, `a`, custom component) must have an explicit, high-contrast `:focus-visible` outline. Focus outlines must not be removed or hidden.
+  * Tab indexes must follow natural reading order.
+* **Semantic Structure:**
+  * Pages must contain exactly one `<h1>`.
+  * Interactive controls must be wrapped in semantic HTML (e.g., `<button>` instead of `div onClick`).
+  * Non-text elements (images, 3D viewers) must have descriptive `alt` tags or `aria-label` tags.
+
+---
+
+## 5. Motion & Micro-interactions
+Transitions make applications feel responsive.
+
+* **Durations:**
+  * **Hover states:** `150ms` to `200ms` using `cubic-bezier(0.4, 0, 0.2, 1)`.
+  * **Page transitions:** `300ms` to `400ms`.
+  * **Heavy panel slides:** `400ms` with spring physics (`stiffness: 100, damping: 15`).
+* **Tactile Click Feedback:** Buttons must scale down to `98%` on click (`scale-98`) and return instantly on release.
+* **3D Viewers:** Camera rotation must be inertia-dampened (orbit controls with `enableDamping = true`) to prevent jerky movements during manual rotation.
