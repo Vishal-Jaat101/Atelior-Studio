@@ -1,0 +1,26 @@
+{
+  "name": "atelier-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Atelier — Multi-Agent Product Studio",
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo clean"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "prettier": "^3.3.3",
+    "eslint": "^9.9.0",
+    "turbo": "^2.0.4",
+    "bun-types": "^1.1.18",
+    "bun": "^1.1.18"
+  }
+}

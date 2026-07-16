@@ -1,0 +1,116 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Project {
+  id                 String              @id @default(uuid())
+  name               String
+  description        String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  livingBrief        LivingBrief?
+  implementationPlan ImplementationPlan?
+  designTokens       DesignTokens?
+  taskGraph          TaskGraph?
+  assets             Asset[]
+  deployments        Deployment[]
+  artifactLogs       ArtifactLog[]
+}
+
+model LivingBrief {
+  id        String   @id @default(uuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  content   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ImplementationPlan {
+  id        String   @id @default(uuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version   Int      @default(1)
+  content   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DesignTokens {
+  id        String   @id @default(uuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version   Int      @default(1)
+  tokens    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TaskGraph {
+  id        String     @id @default(uuid())
+  projectId String     @unique
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  nodes     TaskNode[]
+}
+
+enum TaskStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  BLOCKED
+}
+
+model TaskNode {
+  id           String     @id @default(uuid())
+  graphId      String
+  graph        TaskGraph  @relation(fields: [graphId], references: [id], onDelete: Cascade)
+  taskType     String
+  status       TaskStatus @default(PENDING)
+  assignedTo   String
+  retries      Int        @default(0)
+  dependencies String[]
+  payload      Json
+  result       Json?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Asset {
+  id          String   @id @default(uuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String
+  source      String
+  url         String
+  attribution String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+}
+
+model Deployment {
+  id          String   @id @default(uuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version     Int
+  url         String
+  changelog   String
+  createdAt   DateTime @default(now())
+}
+
+model ArtifactLog {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type      String
+  name      String
+  path      String
+  createdAt DateTime @default(now())
+}
