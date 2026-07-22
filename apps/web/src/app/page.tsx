@@ -771,68 +771,36 @@ export default function DiscoveryWorkspacePage() {
 
   return (
     <main 
-      className="flex h-screen w-screen overflow-hidden text-sm relative"
-      style={{
-        backgroundColor: tokens.colors.paper050,
-        color: tokens.colors.ink900,
-        fontFamily: tokens.typography.brandFonts.body,
-        // Faint Dot-Grid Background
-        backgroundImage: 'radial-gradient(rgba(22, 27, 34, 0.07) 1.2px, transparent 1.2px)',
-        backgroundSize: '24px 24px'
-      }}
+      className="flex h-screen w-screen overflow-hidden text-sm relative bg-[#0B0D12] text-[#F2F0EC] font-sans selection:bg-[#C9A227]/30 selection:text-[#F2F0EC]"
     >
-      {/* 4 Corner Registration Marks for the Entire Workspace Screen */}
-      <div className="absolute top-3 left-3 font-mono text-[10px] text-zinc-400 pointer-events-none select-none select-all-none">+</div >
-      <div className="absolute top-3 right-3 font-mono text-[10px] text-zinc-400 pointer-events-none select-none select-all-none">+</div >
-      <div className="absolute bottom-3 left-3 font-mono text-[10px] text-zinc-400 pointer-events-none select-none select-all-none">+</div >
-      <div className="absolute bottom-3 right-3 font-mono text-[10px] text-zinc-400 pointer-events-none select-none select-all-none">+</div >
-
       {/* LEFT SIDE: Onboarding Workspace & Active Q&A Stream */}
       <div 
-        className="flex-1 flex flex-col h-full border-r relative overflow-hidden transition-all duration-300"
-        style={{ borderColor: tokens.colors.pencil400 + '33' }}
+        className="flex-1 flex flex-col h-full border-r border-white/10 relative overflow-hidden transition-all duration-500"
       >
-        {/* Panel Ticks (Corner Registration Marks) */}
-        <div className="absolute top-2 left-2 font-mono text-[9px] text-zinc-400 pointer-events-none select-none">+</div >
-        <div className="absolute top-2 right-2 font-mono text-[9px] text-zinc-400 pointer-events-none select-none">+</div >
-        <div className="absolute bottom-2 left-2 font-mono text-[9px] text-zinc-400 pointer-events-none select-none">+</div >
-        <div className="absolute bottom-2 right-2 font-mono text-[9px] text-zinc-400 pointer-events-none select-none">+</div >
-
         {/* Workspace Brand Header */}
         <div 
-          className="flex items-center justify-between p-6 border-b relative"
-          style={{ borderColor: tokens.colors.pencil400 + '33' }}
+          className="flex items-center justify-between p-6 border-b border-white/10 bg-[#14171F]"
         >
           <div className="flex items-center gap-3">
             <div 
-              className="w-6 h-6 rounded flex items-center justify-center font-bold text-xs"
-              style={{
-                backgroundColor: tokens.colors.blueprint600,
-                color: tokens.colors.paper050,
-                fontFamily: tokens.typography.brandFonts.title
-              }}
+              className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs bg-[#C9A227] text-[#0B0D12] font-serif shadow-md"
             >
               A
             </div>
             <div>
               <span 
-                className="font-bold tracking-wider uppercase text-xs block"
-                style={{ fontFamily: tokens.typography.brandFonts.title, color: tokens.colors.blueprint600 }}
+                className="font-serif tracking-wider uppercase text-xs block text-[#F2F0EC]"
               >
                 ATELIER STUDIO
               </span>
-              <span className="text-[10px] text-zinc-500 font-mono">DRAFTING TABLE WORKSPACE · PHASE 1</span>
+              <span className="text-[10px] text-[#7E7A72] font-mono">NOCTURNE MULTI-AGENT PLATFORM</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span 
-              className="px-2 py-0.5 rounded text-[10px] uppercase font-mono tracking-tight"
-              style={{
-                backgroundColor: tokens.colors.blueprint600 + '15',
-                color: tokens.colors.blueprint600
-              }}
+              className="px-2.5 py-1 rounded-lg text-[10px] uppercase font-mono tracking-wider bg-[#C9A227]/15 border border-[#C9A227]/30 text-[#C9A227]"
             >
-              Onboarding
+              {isQAView ? 'Phase 3 // QA & Deploy' : isCodingView ? 'Phase 2 // Code Synthesis' : project ? 'Phase 1 // Discovery' : 'Phase 0 // Intake'}
             </span>
           </div>
         </div>
@@ -1085,75 +1053,52 @@ export default function DiscoveryWorkspacePage() {
 
       {/* RIGHT SIDE: Collapsible Persistent 'Living Brief' Panel */}
       <div 
-        className={`h-full flex flex-col bg-zinc-50/50 transition-all duration-300 overflow-hidden relative ${
-          isBriefExpanded ? 'w-[450px] border-l' : 'w-12 border-l cursor-pointer hover:bg-zinc-100/80'
+        className={`h-full flex flex-col bg-[#14171F] transition-all duration-500 overflow-hidden relative border-l border-white/10 ${
+          isBriefExpanded ? 'w-[420px]' : 'w-12 cursor-pointer hover:bg-[#1E2330]'
         }`}
-        style={{
-          backgroundColor: '#F7F6F2',
-          borderColor: tokens.colors.pencil400 + '33'
-        }}
         onClick={() => {
           if (!isBriefExpanded) setIsBriefExpanded(true);
         }}
       >
         {/* Expanded Mode View */}
         {isBriefExpanded ? (
-          <div className="flex flex-col h-full w-full">
+          <div className="flex flex-col h-full w-full bg-[#14171F]">
             {/* Header with Title and Collapse Toggle */}
             <div 
-              className="p-6 border-b flex items-center justify-between"
-              style={{ borderColor: tokens.colors.pencil400 + '33' }}
+              className="p-6 border-b border-white/10 flex items-center justify-between bg-[#14171F]"
             >
               <div className="flex items-center gap-2">
                 <span 
-                  className="font-bold text-xs tracking-widest uppercase font-mono"
-                  style={{ color: tokens.colors.pencil400 }}
+                  className="font-mono font-bold text-xs tracking-widest uppercase text-[#C9A227]"
                 >
                   LIVING BRIEF
                 </span>
-                <span className="font-mono text-[9px] bg-zinc-200 text-zinc-600 px-1.5 py-0.5 rounded">V0.1</span>
+                <span className="font-mono text-[9px] bg-[#0B0D12] text-[#7E7A72] px-2 py-0.5 rounded border border-white/10">v1.0</span>
               </div>
               <button 
                 onClick={(e) => {
-                  e.stopPropagation(); // Avoid triggering expand onClick on outer container
+                  e.stopPropagation();
                   setIsBriefExpanded(false);
                 }}
-                className="px-2 py-1 rounded border border-zinc-300 bg-white hover:bg-zinc-100 font-mono text-[10px] uppercase text-zinc-600 transition-all hover:text-black shadow-3xs flex items-center gap-1.5"
+                className="px-2.5 py-1 rounded-lg border border-white/10 bg-[#0B0D12] hover:border-[#C9A227]/40 font-mono text-[10px] uppercase text-[#C4C0B6] transition-all hover:text-[#F2F0EC]"
               >
                 Collapse ❯
               </button>
             </div>
 
-            {/* Spec Leader Annotation pointing to Brief Completeness */}
-            <div className="absolute top-20 -left-[145px] hidden xl:flex items-center gap-1 pointer-events-none font-mono text-[9px] text-zinc-400 select-none">
-              <span>SPEC_04 // RESOLVED_METRIC</span>
-              <svg width="40" height="15" className="opacity-45">
-                <line x1="0" y1="7" x2="35" y2="7" stroke="#8A93A3" strokeWidth="0.8" strokeDasharray="2,2" />
-                <circle cx="35" cy="7" r="1.5" fill="#8A93A3" />
-              </svg>
-            </div>
-
             {/* Progress Bar Panel */}
             <div 
-              className="p-6 border-b space-y-2 bg-[#F1EEE7]/50 relative"
-              style={{ borderColor: tokens.colors.pencil400 + '33' }}
+              className="p-6 border-b border-white/10 space-y-2 bg-[#0B0D12]/60"
             >
-              {/* Corner mark for visual block */}
-              <span className="absolute top-1 left-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-              <span className="absolute top-1 right-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-
-              <div className="flex items-center justify-between font-mono text-[10px] text-zinc-600">
-                <span>BRIEF RESOLVED COMPLETENESS</span>
-                <span className="font-bold">{project ? `${project.completeness}%` : '0%'}</span>
+              <div className="flex items-center justify-between font-mono text-[10px] text-[#C4C0B6]">
+                <span className="uppercase text-[#C9A227]">BRIEF RESOLVED COMPLETENESS</span>
+                <span className="font-bold text-[#F2F0EC]">{project ? `${project.completeness}%` : '0%'}</span>
               </div>
-              <div className="w-full h-2 rounded-full overflow-hidden bg-zinc-200 border border-zinc-300">
+              <div className="w-full h-2 rounded-full overflow-hidden bg-[#0B0D12] border border-white/10">
                 <div 
-                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  className="h-full rounded-full transition-all duration-500 ease-out bg-[#C9A227]"
                   style={{
                     width: project ? `${project.completeness}%` : '0%',
-                    backgroundColor: project && project.completeness === 100 
-                      ? tokens.colors.status.success 
-                      : tokens.colors.blueprint600
                   }}
                 />
               </div>
@@ -1161,14 +1106,9 @@ export default function DiscoveryWorkspacePage() {
               {/* Ingestion Pre-Fill Indicator */}
               {ingestionInfo && ingestionInfo.fieldsPreFilled > 0 && (
                 <div 
-                  className="flex items-center gap-2 mt-2 px-2.5 py-1.5 rounded text-[10px] font-mono border"
-                  style={{
-                    backgroundColor: tokens.colors.verified600 + '10',
-                    borderColor: tokens.colors.verified600 + '33',
-                    color: tokens.colors.verified600,
-                  }}
+                  className="flex items-center gap-2 mt-2 px-2.5 py-1.5 rounded-lg text-[10px] font-mono border border-[#52B788]/30 bg-[#2D6A4F]/20 text-[#52B788]"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: tokens.colors.verified600 }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#52B788]" />
                   <span>{ingestionInfo.fieldsPreFilled} field(s) pre-filled from {ingestionInfo.results.length} uploaded file(s)</span>
                 </div>
               )}
@@ -1185,24 +1125,10 @@ export default function DiscoveryWorkspacePage() {
                 return (
                   <div 
                     key={field}
-                    className="group relative flex flex-col p-4 bg-white rounded border shadow-3xs transition-all duration-150"
-                    style={{ 
-                      borderColor: isEditing 
-                        ? tokens.colors.correction500 
-                        : filled 
-                          ? tokens.colors.pencil400 + '44' 
-                          : tokens.colors.pencil400 + '33',
-                      borderStyle: filled ? 'solid' : 'dashed'
-                    }}
+                    className="group relative flex flex-col p-4 bg-[#0B0D12] rounded-xl border border-white/10 shadow-lg transition-all"
                   >
-                    {/* Corner sub-ticks for structural card grid elements */}
-                    <span className="absolute top-0.5 left-1 text-[8px] opacity-15 font-mono select-none">+</span>
-                    <span className="absolute top-0.5 right-1 text-[8px] opacity-15 font-mono select-none">+</span>
-                    <span className="absolute bottom-0.5 left-1 text-[8px] opacity-15 font-mono select-none">+</span>
-                    <span className="absolute bottom-0.5 right-1 text-[8px] opacity-15 font-mono select-none">+</span>
-
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-zinc-400">
+                      <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-[#C9A227]">
                         {label}
                       </span>
                       
@@ -1210,9 +1136,23 @@ export default function DiscoveryWorkspacePage() {
                         <button 
                           onClick={() => {
                             setEditingField(field);
-                            setEditValue(value === null ? (field === 'platforms' || field === 'mustHaveFeatures' || field === 'niceToHaveFeatures' ? [] : '') : value);
+                            let safeValue = value;
+                            if (field === 'platforms' || field === 'mustHaveFeatures' || field === 'niceToHaveFeatures') {
+                              if (Array.isArray(value)) {
+                                safeValue = value;
+                              } else if (typeof value === 'string' && value.trim()) {
+                                safeValue = value.split(',').map(s => s.trim()).filter(Boolean);
+                              } else {
+                                safeValue = [];
+                              }
+                            } else if (typeof value === 'boolean') {
+                              safeValue = value;
+                            } else {
+                              safeValue = value === null || value === undefined ? '' : String(value);
+                            }
+                            setEditValue(safeValue);
                           }}
-                          className="opacity-0 group-hover:opacity-100 transition-all font-mono text-[10px] uppercase text-zinc-500 hover:text-black flex items-center gap-1"
+                          className="opacity-0 group-hover:opacity-100 transition-all font-mono text-[10px] uppercase text-[#7E7A72] hover:text-[#F2F0EC] flex items-center gap-1"
                         >
                           ✏️ Edit
                         </button>
@@ -1231,12 +1171,11 @@ export default function DiscoveryWorkspacePage() {
                                   type="button"
                                   key={String(opt)}
                                   onClick={() => setEditValue(opt)}
-                                  className={`px-3 py-1 rounded text-xs border font-medium ${
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-mono ${
                                     isSelected 
-                                      ? 'border-transparent text-white' 
-                                      : 'border-zinc-300 text-zinc-700 bg-white hover:bg-zinc-50'
+                                      ? 'bg-[#C9A227] text-[#0B0D12] font-bold' 
+                                      : 'bg-[#14171F] border border-white/10 text-[#C4C0B6]'
                                   }`}
-                                  style={{ backgroundColor: isSelected ? tokens.colors.blueprint600 : undefined }}
                                 >
                                   {opt ? 'Yes (3D Active)' : 'No (2D Only)'}
                                 </button>
@@ -1245,73 +1184,81 @@ export default function DiscoveryWorkspacePage() {
                           </div>
                         )}
 
-                        {field === 'platforms' && (
-                          <div className="flex gap-2">
-                            {['web', 'mobile'].map((opt) => {
-                              const selectedList = (editValue as string[]) || [];
-                              const isSelected = selectedList.includes(opt);
-                              return (
-                                <button
-                                  type="button"
-                                  key={opt}
-                                  onClick={() => toggleInlineChipSelection(opt, true)}
-                                  className={`px-3 py-1 rounded text-xs border font-medium uppercase ${
-                                    isSelected 
-                                      ? 'border-transparent text-white' 
-                                      : 'border-zinc-300 text-zinc-700 bg-white hover:bg-zinc-50'
-                                  }`}
-                                  style={{ backgroundColor: isSelected ? tokens.colors.blueprint600 : undefined }}
-                                >
-                                  {opt}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-
-                        {(field === 'mustHaveFeatures' || field === 'niceToHaveFeatures') && (
-                          <div className="space-y-2">
-                            <div className="flex flex-wrap gap-1.5">
-                              {FIELD_OPTIONS[field]?.map((opt) => {
-                                const selectedList = (editValue as string[]) || [];
+                        {field === 'platforms' && (() => {
+                          const selectedList = Array.isArray(editValue) 
+                            ? editValue.map(String) 
+                            : (typeof editValue === 'string' && editValue.trim() ? editValue.split(',').map(s => s.trim()).filter(Boolean) : []);
+                          return (
+                            <div className="flex gap-2">
+                              {['web', 'mobile'].map((opt) => {
                                 const isSelected = selectedList.includes(opt);
                                 return (
                                   <button
                                     type="button"
                                     key={opt}
-                                    onClick={() => toggleInlineChipSelection(opt, true)}
-                                    className={`px-2 py-1 rounded text-[10px] border transition-all ${
+                                    onClick={() => {
+                                      if (isSelected) {
+                                        setEditValue(selectedList.filter(i => i !== opt));
+                                      } else {
+                                        setEditValue([...selectedList, opt]);
+                                      }
+                                    }}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase ${
                                       isSelected 
-                                        ? 'border-transparent text-white' 
-                                        : 'border-zinc-200 text-zinc-600 bg-zinc-50 hover:bg-zinc-100'
+                                        ? 'bg-[#C9A227] text-[#0B0D12] font-bold' 
+                                        : 'bg-[#14171F] border border-white/10 text-[#C4C0B6]'
                                     }`}
-                                    style={{ backgroundColor: isSelected ? tokens.colors.blueprint600 : undefined }}
                                   >
                                     {opt}
                                   </button>
                                 );
                               })}
                             </div>
-                            <input
-                              type="text"
-                              placeholder="Type custom feature and press Enter to add..."
-                              className="w-full p-2 border rounded text-xs outline-none focus:border-zinc-400"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  const inputVal = e.currentTarget.value.trim();
-                                  if (inputVal) {
-                                    const selectedList = (editValue as string[]) || [];
-                                    if (!selectedList.includes(inputVal)) {
-                                      setEditValue([...selectedList, inputVal]);
+                          );
+                        })()}
+
+                        {(field === 'mustHaveFeatures' || field === 'niceToHaveFeatures') && (() => {
+                          const featureList = Array.isArray(editValue) 
+                            ? editValue.map(String) 
+                            : (typeof editValue === 'string' && editValue.trim() ? editValue.split(',').map(s => s.trim()).filter(Boolean) : []);
+                          return (
+                            <div className="space-y-2">
+                              <div className="flex flex-wrap gap-1.5">
+                                {featureList.map((item, idx) => (
+                                  <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-mono bg-[#2B4C7E]/30 text-[#9BB8E5] border border-[#2B4C7E]">
+                                    <span>{item}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setEditValue(featureList.filter((_, i) => i !== idx));
+                                      }}
+                                      className="hover:text-white font-bold ml-1"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                              <input
+                                type="text"
+                                placeholder="Type option and press Enter..."
+                                className="w-full p-2 border border-white/10 rounded-lg outline-none text-xs bg-[#14171F] text-[#F2F0EC]"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    const inputVal = e.currentTarget.value.trim();
+                                    if (inputVal) {
+                                      if (!featureList.includes(inputVal)) {
+                                        setEditValue([...featureList, inputVal]);
+                                      }
+                                      e.currentTarget.value = '';
                                     }
-                                    e.currentTarget.value = '';
                                   }
-                                }
-                              }}
-                            />
-                          </div>
-                        )}
+                                }}
+                              />
+                            </div>
+                          );
+                        })()}
 
                         {field === 'visualTone' && (
                           <div className="flex flex-wrap gap-1.5">
@@ -1322,12 +1269,11 @@ export default function DiscoveryWorkspacePage() {
                                   type="button"
                                   key={opt}
                                   onClick={() => setEditValue(opt)}
-                                  className={`px-2 py-1.5 rounded text-xs border ${
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-mono ${
                                     isSelected 
-                                      ? 'border-transparent text-white' 
-                                      : 'border-zinc-300 text-zinc-700 bg-white hover:bg-zinc-50'
+                                      ? 'bg-[#C9A227] text-[#0B0D12] font-bold' 
+                                      : 'bg-[#14171F] border border-white/10 text-[#C4C0B6]'
                                   }`}
-                                  style={{ backgroundColor: isSelected ? tokens.colors.blueprint600 : undefined }}
                                 >
                                   {opt}
                                 </button>
@@ -1339,9 +1285,8 @@ export default function DiscoveryWorkspacePage() {
                         {(field === 'targetAudience' || field === 'coreUserFlow') && (
                           <textarea
                             rows={2}
-                            className="w-full p-2 border rounded outline-none text-xs bg-zinc-50 focus:bg-white resize-none"
-                            style={{ borderColor: tokens.colors.pencil400 + '66' }}
-                            value={editValue || ''}
+                            className="w-full p-2.5 border border-white/10 rounded-lg outline-none text-xs bg-[#14171F] text-[#F2F0EC] resize-none"
+                            value={Array.isArray(editValue) ? editValue.join(', ') : (editValue || '')}
                             onChange={(e) => setEditValue(e.target.value)}
                           />
                         )}
@@ -1352,61 +1297,50 @@ export default function DiscoveryWorkspacePage() {
                               setEditingField(null);
                               setEditValue(null);
                             }}
-                            className="px-2.5 py-1 rounded border border-zinc-300 text-[10px] uppercase font-mono text-zinc-600 bg-white hover:bg-zinc-50"
+                            className="px-3 py-1 rounded-lg border border-white/10 text-[10px] uppercase font-mono text-[#C4C0B6] bg-[#14171F] hover:bg-[#1E2330]"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={() => handleSaveInlineEdit(field)}
-                            className="px-2.5 py-1 rounded text-white text-[10px] uppercase font-mono font-bold hover:brightness-95"
-                            style={{ backgroundColor: tokens.colors.blueprint600 }}
+                            className="px-3 py-1 rounded-lg text-[#0B0D12] text-[10px] uppercase font-mono font-bold bg-[#C9A227] hover:bg-[#A6841C]"
                           >
                             Save
                           </button>
                         </div>
                       </div>
                     ) : (
-                      // Read-Only field state
+                      // Read-Only Field State
                       <div>
                         {filled ? (
-                          <div className="text-xs leading-relaxed" style={{ color: tokens.colors.ink900 }}>
+                          <div className="text-xs leading-relaxed text-[#F2F0EC]">
                             {field === 'has3DApplicability' ? (
-                              <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-2">
                                 <span 
-                                  className="w-1.5 h-1.5 rounded-full" 
-                                  style={{ backgroundColor: value ? tokens.colors.status.success : tokens.colors.pencil400 }}
+                                  className="w-2 h-2 rounded-full bg-[#C9A227] animate-pulse" 
                                 />
-                                <span>{value ? 'Yes, interactive 3D rendering activated' : 'No, standard flat assets only'}</span>
+                                <span>{value ? 'Yes, interactive 3D rendering activated' : 'No, 2D assets only'}</span>
                               </div>
                             ) : Array.isArray(value) ? (
                               <div className="flex flex-wrap gap-1.5">
                                 {value.map((v, i) => (
                                   <span 
                                     key={i} 
-                                    className="px-2 py-0.5 rounded-full text-[10px] font-mono border"
-                                    style={{
-                                      backgroundColor: tokens.colors.blueprint600 + '10',
-                                      borderColor: tokens.colors.blueprint600 + '33',
-                                      color: tokens.colors.blueprint600
-                                    }}
+                                    className="px-2.5 py-1 rounded-md text-[10px] font-mono border border-[#2B4C7E] bg-[#2B4C7E]/20 text-[#9BB8E5]"
                                   >
                                     {v}
                                   </span>
                                 ))}
                               </div>
                             ) : (
-                              <span className="font-medium">{String(value)}</span>
+                              <span className="font-serif text-sm text-[#F2F0EC]">{String(value)}</span>
                             )}
                           </div>
                         ) : (
                           <div 
-                            className="text-[11px] font-mono italic p-2 border border-dashed rounded text-center"
-                            style={{ 
-                              borderColor: tokens.colors.pencil400 + '44',
-                              color: tokens.colors.pencil400
-                            }}
+                            className="text-[11px] font-mono italic p-2.5 border border-dashed border-white/10 rounded-lg text-center text-[#7E7A72]"
                           >
-                            [Pending Discovery - Ask Question]
+                            [Pending Discovery - Interview Queue]
                           </div>
                         )}
                       </div>
@@ -1418,21 +1352,19 @@ export default function DiscoveryWorkspacePage() {
           </div>
         ) : (
           // Collapsed Mode View (Narrow Ribbon)
-          <div className="flex flex-col h-full w-full items-center py-6 select-none justify-between">
-            {/* Expand Icon */}
+          <div className="flex flex-col h-full w-full items-center py-6 select-none justify-between bg-[#14171F]">
             <button 
               onClick={(e) => {
                 e.stopPropagation();
                 setIsBriefExpanded(true);
               }}
-              className="w-8 h-8 rounded border border-zinc-300 bg-white hover:bg-zinc-100 flex items-center justify-center font-bold text-zinc-600 shadow-3xs"
+              className="w-8 h-8 rounded-lg border border-white/10 bg-[#0B0D12] hover:border-[#C9A227]/40 flex items-center justify-center font-bold text-[#C9A227]"
             >
               ❮
             </button>
 
-            {/* Rotated Vertical Title Strip */}
             <div 
-              className="font-mono text-zinc-400 font-bold uppercase tracking-[0.2em] text-xs leading-none select-none my-auto"
+              className="font-mono text-[#C9A227] font-bold uppercase tracking-[0.2em] text-xs leading-none select-none my-auto"
               style={{
                 writingMode: 'vertical-rl',
                 textOrientation: 'mixed'
@@ -1441,14 +1373,8 @@ export default function DiscoveryWorkspacePage() {
               LIVING BRIEF
             </div>
 
-            {/* Completeness Bubble Indicator */}
             <div 
-              className="w-8 h-8 rounded-full border flex items-center justify-center font-mono text-[9px] font-bold shadow-3xs"
-              style={{
-                backgroundColor: tokens.colors.blueprint600 + '10',
-                borderColor: tokens.colors.blueprint600 + '33',
-                color: tokens.colors.blueprint600
-              }}
+              className="w-8 h-8 rounded-full border border-[#C9A227]/40 bg-[#C9A227]/10 flex items-center justify-center font-mono text-[9px] font-bold text-[#C9A227]"
             >
               {project ? `${project.completeness}%` : '0%'}
             </div>

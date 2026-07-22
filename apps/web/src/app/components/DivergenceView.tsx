@@ -37,44 +37,36 @@ export default function DivergenceView({
 }: DivergenceViewProps) {
   if (selectedDirection) {
     return (
-      <div className="p-8 rounded border-2 border-dashed bg-white text-center space-y-6 my-auto relative" style={{ borderColor: tokens.colors.status.success + '88' }}>
-        <span className="absolute top-1 left-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-        <span className="absolute top-1 right-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-        <span className="absolute bottom-1 left-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-        <span className="absolute bottom-1 right-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-
-        <div className="space-y-2">
-          <span className="inline-flex w-12 h-12 rounded-full items-center justify-center font-bold text-lg"
-            style={{
-              backgroundColor: tokens.colors.status.success + '22',
-              color: tokens.colors.status.success
-            }}
-          >
+      <div className="p-8 rounded-xl border border-[#C9A227]/40 bg-[#14171F] text-center space-y-6 my-auto relative shadow-2xl max-w-2xl mx-auto nocturne-transition">
+        <div className="space-y-3">
+          <span className="inline-flex w-14 h-14 rounded-full items-center justify-center font-bold text-xl bg-[#C9A227]/20 border border-[#C9A227] text-[#C9A227] gold-accent-glow">
             ✓
           </span>
-          <h2 className="text-xl font-bold" style={{ color: tokens.colors.status.success }}>
-            Design Direction Set!
+          <h2 className="text-2xl font-serif text-[#F2F0EC]">
+            Design Direction Confirmed
           </h2>
-          <p className="text-zinc-600 text-xs max-w-md mx-auto leading-relaxed">
-            You selected the <strong className="uppercase">{selectedDirection.axis}</strong> paradigm. The design tokens have been written to the database. We are ready to build the architecture.
+          <p className="text-[#C4C0B6] text-xs max-w-md mx-auto leading-relaxed">
+            You selected the <strong className="uppercase text-[#C9A227]">{selectedDirection.axis}</strong> paradigm. The design tokens have been written to PostgreSQL. Ready to generate system architecture.
           </p>
         </div>
 
-        {/* Show Swatch Preview of Chosen Direction */}
-        <div className="p-4 rounded border bg-zinc-50 border-zinc-200 text-left space-y-3 max-w-sm mx-auto font-mono text-[11px]">
-          <div className="flex items-center justify-between border-b pb-2 border-zinc-200">
-            <span className="font-bold uppercase text-[10px]">Active Design Tokens</span>
-            <span className="px-1.5 py-0.5 rounded bg-zinc-200 text-zinc-600 text-[9px] uppercase">{selectedDirection.axis}</span>
+        {/* Swatch Preview of Chosen Direction */}
+        <div className="p-5 rounded-lg border border-white/10 bg-[#0B0D12] text-left space-y-3 max-w-sm mx-auto font-mono text-[11px]">
+          <div className="flex items-center justify-between border-b pb-2 border-white/10">
+            <span className="font-bold uppercase text-[10px] text-[#C9A227]">Active Design Tokens</span>
+            <span className="px-2 py-0.5 rounded bg-[#2B4C7E]/40 border border-[#2B4C7E] text-[#9BB8E5] text-[9px] uppercase">
+              {selectedDirection.axis}
+            </span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-zinc-400">Heading:</span>
-            <span className="font-bold">{selectedDirection.tokenPreview?.typography?.headingFont}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-[#7E7A72]">Headline Font:</span>
+            <span className="font-semibold text-[#F2F0EC]">{selectedDirection.tokenPreview?.typography?.headingFont}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-zinc-400">Palette:</span>
-            <div className="flex gap-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[#7E7A72]">Palette:</span>
+            <div className="flex gap-1.5">
               {Object.values(selectedDirection.tokenPreview?.colors || {}).map((c: any, i) => (
-                <span key={i} className="w-4 h-4 rounded border border-zinc-300 inline-block" style={{ backgroundColor: c }} title={c} />
+                <span key={i} className="w-4 h-4 rounded border border-white/20 inline-block" style={{ backgroundColor: c }} title={c} />
               ))}
             </div>
           </div>
@@ -87,15 +79,13 @@ export default function DivergenceView({
               setSelectedDirection(null);
               setDesignDirections(null);
             }}
-            className="px-4 py-2 border rounded font-mono text-[10px] uppercase hover:bg-zinc-50"
-            style={{ borderColor: tokens.colors.pencil400 }}
+            className="px-5 py-2.5 border border-white/10 rounded-lg font-mono text-[10px] uppercase text-[#C4C0B6] hover:bg-[#1E2330] hover:text-[#F2F0EC] transition-all"
           >
             Change Direction
           </button>
           <button
             type="button"
-            className="px-5 py-2 rounded text-white font-bold text-xs uppercase tracking-wide hover:brightness-95 transition-all"
-            style={{ backgroundColor: tokens.colors.blueprint600 }}
+            className="px-6 py-2.5 rounded-lg text-[#0B0D12] bg-[#C9A227] hover:bg-[#A6841C] font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#C9A227]/20"
             onClick={handleGenerateBlueprint}
             disabled={loading}
           >
@@ -109,14 +99,14 @@ export default function DivergenceView({
   return (
     <div className="space-y-6 my-auto w-full max-w-4xl mx-auto">
       <div className="text-center space-y-2">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-[#28456B] bg-[#28456B]/10 px-2.5 py-1 rounded">
-          Divergence Specialist (Creative Gate)
+        <span className="text-[10px] font-mono uppercase tracking-widest text-[#C9A227] bg-[#C9A227]/10 border border-[#C9A227]/30 px-2.5 py-1 rounded">
+          Divergence Agent // Anti-Generic Critique Gate
         </span>
-        <h2 className="text-2xl font-bold uppercase" style={{ color: tokens.colors.blueprint600, fontFamily: tokens.typography.brandFonts?.title || 'inherit' }}>
-          Pick design direction
+        <h2 className="text-3xl font-serif text-[#F2F0EC]">
+          Select Design Direction
         </h2>
-        <p className="text-zinc-500 text-xs max-w-md mx-auto">
-          Two custom directions survived the Design Agent's anti-generic critique check. Choose one to start building.
+        <p className="text-[#C4C0B6] text-xs max-w-md mx-auto leading-relaxed">
+          Surviving design directions evaluated against anti-generic critique criteria. Choose one to initialize system architecture.
         </p>
       </div>
 
@@ -124,42 +114,38 @@ export default function DivergenceView({
         {designDirections.map((dir) => (
           <div 
             key={dir.id}
-            className="bg-white rounded border-2 p-6 flex flex-col justify-between space-y-6 relative shadow-sm hover:border-[#28456B]/50 transition-all"
-            style={{ borderColor: tokens.colors.pencil400 + '33' }}
+            className="bg-[#14171F] rounded-xl border border-white/10 p-6 flex flex-col justify-between space-y-6 relative shadow-xl hover:border-[#C9A227]/40 transition-all nocturne-transition group"
           >
-            <span className="absolute top-1 left-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-            <span className="absolute top-1 right-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-
             <div className="space-y-4">
-              <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: tokens.colors.pencil400 + '15' }}>
+              <div className="flex items-center justify-between border-b pb-3 border-white/10">
                 <div>
-                  <h3 className="font-bold text-sm uppercase" style={{ color: tokens.colors.blueprint600 }}>{dir.name}</h3>
-                  <span className="text-[9px] font-mono text-zinc-400">AXIS: {dir.axis.toUpperCase()}</span>
+                  <h3 className="font-serif text-lg text-[#F2F0EC] group-hover:text-[#C9A227] transition-colors">{dir.name}</h3>
+                  <span className="text-[9px] font-mono text-[#7E7A72]">PARADIGM: {dir.axis.toUpperCase()}</span>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  SURVIVED
+                <span className="px-2.5 py-1 rounded text-[9px] font-mono bg-[#2D6A4F]/20 border border-[#2D6A4F] text-[#52B788]">
+                  CRITIQUE SURVIVOR
                 </span>
               </div>
 
-              <p className="text-zinc-600 text-xs leading-relaxed">{dir.description}</p>
+              <p className="text-[#C4C0B6] text-xs leading-relaxed">{dir.description}</p>
 
-              {/* swatches & font details */}
-              <div className="p-4 rounded bg-zinc-50 space-y-3 font-mono text-[10px]">
+              {/* Swatches & Font details */}
+              <div className="p-4 rounded-lg bg-[#0B0D12] space-y-3 font-mono text-[10px] border border-white/5">
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-400">Typography:</span>
-                  <span className="font-bold text-zinc-800">{dir.tokenPreview.typography.headingFont} + {dir.tokenPreview.typography.bodyFont}</span>
+                  <span className="text-[#7E7A72]">Typography:</span>
+                  <span className="font-semibold text-[#F2F0EC]">{dir.tokenPreview.typography.headingFont} + {dir.tokenPreview.typography.bodyFont}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-400">Color Palette:</span>
+                  <span className="text-[#7E7A72]">Color Palette:</span>
                   <div className="flex gap-1.5">
                     {Object.values(dir.tokenPreview.colors).map((color: any, i) => (
-                      <span key={i} className="w-5 h-5 rounded border border-zinc-200 block shadow-3xs" style={{ backgroundColor: color }} title={color} />
+                      <span key={i} className="w-5 h-5 rounded border border-white/10 block" style={{ backgroundColor: color }} title={color} />
                     ))}
                   </div>
                 </div>
-                <div className="pt-2 border-t border-zinc-200/50">
-                  <span className="text-zinc-400 block mb-1">Critique Report:</span>
-                  <span className="text-[9px] text-zinc-500 italic leading-snug block">"{dir.critiqueFeedback}"</span>
+                <div className="pt-2 border-t border-white/10">
+                  <span className="text-[#7E7A72] block mb-1">Critique Gate Evaluation:</span>
+                  <span className="text-[10px] text-[#C4C0B6] italic leading-snug block">"{dir.critiqueFeedback}"</span>
                 </div>
               </div>
             </div>
@@ -167,10 +153,9 @@ export default function DivergenceView({
             <button
               type="button"
               onClick={() => handleSelectDirection(dir.id)}
-              className="w-full py-2.5 rounded font-bold text-xs uppercase tracking-wider text-white hover:brightness-95 transition-all"
-              style={{ backgroundColor: tokens.colors.blueprint600 }}
+              className="w-full py-3 rounded-lg font-mono font-bold text-xs uppercase tracking-wider bg-[#C9A227] hover:bg-[#A6841C] text-[#0B0D12] transition-all shadow-md"
             >
-              Select Direction
+              Select {dir.name}
             </button>
           </div>
         ))}
@@ -180,9 +165,9 @@ export default function DivergenceView({
         <button
           type="button"
           onClick={() => setDesignDirections(null)}
-          className="text-zinc-500 hover:text-black font-mono text-[10px] uppercase border-b border-transparent hover:border-black transition-all"
+          className="text-[#7E7A72] hover:text-[#F2F0EC] font-mono text-[10px] uppercase transition-all"
         >
-          Back to Interview Summary
+          ← Back to Interview Summary
         </button>
       </div>
     </div>

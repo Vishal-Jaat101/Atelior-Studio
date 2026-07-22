@@ -1,68 +1,82 @@
 export const tokens = {
   colors: {
-    // Drafting Table color definitions
-    ink900: '#161B22',
-    paper050: '#F1EEE7',
-    blueprint600: '#28456B',
-    pencil400: '#8A93A3',
-    correction500: '#E8A33D',
-    verified600: '#2F6F6B',
+    // Nocturne Core Palette
+    obsidian950: '#0B0D12',     // Deep mysterious canvas
+    charcoal900: '#14171F',     // Panel / card background surface
+    charcoal800: '#1E2330',     // Elevated surface / border outline
+    warmWhite050: '#F2F0EC',    // Primary high-contrast text & accents
+    warmWhite200: '#C4C0B6',    // Secondary body text
+    warmWhite400: '#7E7A72',    // Muted annotations & captions
+    antiqueGold500: '#C9A227',  // Single signature accent (hero focus)
+    antiqueGold600: '#A6841C',  // Gold hover/active state
+    sapphire700: '#2B4C7E',     // Secondary interactive states & badges
+    sapphire800: '#1D3559',     // Subtle sapphire background fills
 
-    // Semantic roles for building clean, non-generic layouts
-    canvasBackground: '#F1EEE7', // paper-050 (Drafting Table light/paper mode default)
-    canvasBackgroundDark: '#161B22', // ink-900 (for high contrast dark canvases)
-    textPrimary: '#161B22', // ink-900
-    textPrimaryInverse: '#F1EEE7', // paper-050
-    textSecondary: '#8A93A3', // pencil-400
-    primaryAccent: '#28456B', // blueprint-600
-    secondaryAccent: '#8A93A3', // pencil-400
-    sidebarBackground: '#F1EEE7',
-    sidebarBorder: '#8A93A3',
-    cardBackground: '#F1EEE7',
-    cardBorder: '#8A93A3',
+    // Semantic roles mapped to Nocturne theme
+    canvasBackground: '#0B0D12',
+    canvasBackgroundDark: '#0B0D12',
+    surfaceBackground: '#14171F',
+    cardBackground: '#14171F',
+    cardBorder: 'rgba(201, 162, 39, 0.2)', // Hairline gold border accent
+    cardBorderSubtle: 'rgba(255, 255, 255, 0.07)',
+    sidebarBackground: '#0E1017',
+    sidebarBorder: 'rgba(255, 255, 255, 0.08)',
+    textPrimary: '#F2F0EC',
+    textPrimaryInverse: '#0B0D12',
+    textSecondary: '#C4C0B6',
+    textMuted: '#7E7A72',
+    primaryAccent: '#C9A227',
+    secondaryAccent: '#2B4C7E',
 
     status: {
-      success: '#2F6F6B', // verified-600
-      warning: '#E8A33D', // correction-500
-      danger: '#E8A33D', // correction-500 used for high attention/warning
+      success: '#2D6A4F',
+      warning: '#C9A227',
+      danger: '#9E2A2B',
     },
     qa: {
-      passed: '#2F6F6B',    // verified-600
-      failed: '#DC2626',    // red for failures
-      retrying: '#E8A33D',  // correction-500 for retry state
-      deployed: '#059669',  // emerald for deployment success
+      passed: '#2D6A4F',
+      failed: '#9E2A2B',
+      retrying: '#C9A227',
+      deployed: '#2D6A4F',
     },
   },
+
   typography: {
     brandFonts: {
-      title: '"Space Grotesk", "Cabinet Grotesk", sans-serif', // Technical grotesk display face
-      body: '"Plus Jakarta Sans", "Satoshi", "IBM Plex Sans", sans-serif', // Humanist sans body face
-      code: '"Space Mono", "JetBrains Mono", monospace', // Monospace for data/annotations
+      title: '"Fraunces", "Canela", "Playfair Display", Georgia, serif', // Editorial serif display
+      headline: '"Fraunces", "Canela", "Playfair Display", Georgia, serif',
+      body: '"Inter", "Neue Montreal", system-ui, sans-serif', // Humanist sans body
+      code: '"JetBrains Mono", "Fira Code", monospace', // Data & annotations
     },
     scale: {
-      label: '12px',
-      body: '16px',
-      header: '32px',
+      display: '48px',
+      h1: '36px',
+      h2: '28px',
+      h3: '22px',
+      body: '15px',
+      caption: '12px',
     },
   },
+
   layout: {
     spacing: {
       unit: '4px',
       padding: '24px',
     },
   },
+
   motion: {
     duration: {
-      hover: '150ms',
-      tabTransition: '200ms',
-      panelSlide: '400ms',
+      hover: '300ms',
+      fade: '500ms',
+      parallax: '800ms',
+      tabTransition: '500ms',
+      panelSlide: '600ms',
     },
     ease: {
-      default: 'cubic-bezier(0.4, 0, 0.2, 1)',
-      spring: {
-        stiffness: 100,
-        damping: 15,
-      },
+      default: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      deliberate: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      smooth: 'cubic-bezier(0.25, 1, 0.5, 1)',
     },
   },
 };

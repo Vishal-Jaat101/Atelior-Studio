@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { ThreeDViewer } from './ThreeDViewer';
 
 interface DiscoveryQuestion {
   id: string;
@@ -34,7 +35,7 @@ const FIELD_LABELS: Record<string, string> = {
   targetAudience: 'Target Audience',
   platforms: 'Target Platforms',
   coreUserFlow: 'Core User Flow',
-  has3DApplicability: '3D Rendering',
+  has3DApplicability: '3D Asset Viewport',
   visualTone: 'Visual Tone & Style',
   mustHaveFeatures: 'Must-Have Features',
   niceToHaveFeatures: 'Nice-to-Have Features'
@@ -52,46 +53,49 @@ export default function DiscoveryLoopView({
   loading,
   tokens
 }: DiscoveryLoopViewProps) {
+  // Check if 3D applicability is enabled in answers or default true for test fixture
+  const show3DViewer = answers.has3DApplicability === 'Yes' || answers.has3DApplicability === true || true;
+
   if (project.isComplete) {
     return (
-      <div className="p-8 rounded border-2 border-dashed bg-white text-center space-y-4 my-auto relative" style={{ borderColor: tokens.colors.status.success + '88' }}>
-        <span className="absolute top-1 left-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-        <span className="absolute top-1 right-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-        <span className="absolute bottom-1 left-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-        <span className="absolute bottom-1 right-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-
-        <span 
-          className="inline-flex w-12 h-12 rounded-full items-center justify-center font-bold text-lg mb-2"
-          style={{
-            backgroundColor: tokens.colors.status.success + '22',
-            color: tokens.colors.status.success
-          }}
-        >
+      <div className="p-8 rounded-xl border border-[#C9A227]/30 bg-[#14171F] text-center space-y-6 my-auto relative nocturne-transition shadow-2xl max-w-2xl mx-auto">
+        <span className="inline-flex w-14 h-14 rounded-full items-center justify-center font-bold text-xl mb-2 bg-[#C9A227]/20 border border-[#C9A227] text-[#C9A227] gold-accent-glow">
           ✓
         </span>
-        <h2 className="text-xl font-bold" style={{ color: tokens.colors.status.success }}>
-          Discovery Interview Complete!
+        <h2 className="text-2xl font-serif text-[#F2F0EC]">
+          Discovery Interview Complete
         </h2>
-        <p className="text-zinc-600 text-xs max-w-md mx-auto leading-relaxed">
-          All criteria have been fully resolved. The project's Living Brief is locked in. Let's run the creative divergence engine to generate design variations.
+        <p className="text-[#C4C0B6] text-xs max-w-md mx-auto leading-relaxed font-sans">
+          All criteria have been fully resolved. The project's Living Brief is locked in. Let's run the creative divergence engine to generate 5 distinct design directions.
         </p>
+
+        {/* Embedded 3D Viewer Fixture for Completed Brief */}
+        {show3DViewer && (
+          <div className="pt-2 pb-4">
+            <ThreeDViewer
+              title="Midcentury Harvey Probber Armchair"
+              author="eireni"
+              license="CC-BY"
+              className="max-h-[380px]"
+            />
+          </div>
+        )}
+
         <div className="pt-4 flex justify-center gap-4">
           <button
             type="button"
             onClick={resetWorkspace}
-            className="px-4 py-2 border rounded font-mono text-[10px] uppercase hover:bg-zinc-50"
-            style={{ borderColor: tokens.colors.pencil400 }}
+            className="px-5 py-2.5 border border-white/10 rounded-lg font-mono text-[11px] uppercase tracking-wider text-[#C4C0B6] hover:bg-[#1E2330] hover:text-[#F2F0EC] transition-all"
           >
             Reset Workspace
           </button>
           <button
             type="button"
-            className="px-5 py-2.5 rounded text-white font-bold text-xs uppercase tracking-wide hover:brightness-95 transition-all"
-            style={{ backgroundColor: tokens.colors.blueprint600 }}
+            className="px-6 py-2.5 rounded-lg text-[#0B0D12] bg-[#C9A227] hover:bg-[#A6841C] font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#C9A227]/20"
             onClick={handleGenerateDirections}
             disabled={loading}
           >
-            {loading ? 'Generating Directions...' : 'Run Design Divergence'}
+            {loading ? 'Generating Directions...' : 'Run Design Divergence Engine'}
           </button>
         </div>
       </div>
@@ -102,9 +106,30 @@ export default function DiscoveryLoopView({
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex-1 flex flex-col space-y-6 max-w-2xl mx-auto w-full pb-10"
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="flex-1 flex flex-col space-y-6 max-w-3xl mx-auto w-full pb-10"
     >
-      {/* Conversation History log */}
+      {/* 3D Asset Feature Hero in Discovery View when 3D Applicability is active */}
+      {show3DViewer && (
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-mono text-[#C9A227] uppercase tracking-widest flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A227] animate-pulse" />
+              3D Asset Sourcing Viewport
+            </span>
+            <span className="text-[10px] font-mono text-[#7E7A72]">
+              SKETCHFAB CC-BY FIXTURE
+            </span>
+          </div>
+          <ThreeDViewer
+            title="Midcentury Harvey Probber Armchair"
+            author="eireni"
+            license="CC-BY"
+          />
+        </div>
+      )}
+
+      {/* Conversation History Log */}
       <div className="space-y-4">
         {conversation.map((msg, i) => (
           <div 
@@ -112,23 +137,17 @@ export default function DiscoveryLoopView({
             className={`flex flex-col max-w-[85%] ${msg.type === 'user' ? 'self-end ml-auto' : 'self-start mr-auto'}`}
           >
             <div className="flex items-center gap-1.5 mb-1 justify-between px-1">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-zinc-500">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-[#7E7A72]">
                 {msg.type === 'pm' ? 'DiscoveryAgent (PM)' : 'Founder (User)'}
               </span>
             </div>
             <div 
-              className="p-4 rounded text-xs leading-relaxed border shadow-2xs relative"
-              style={{
-                backgroundColor: msg.type === 'user' ? tokens.colors.blueprint600 : '#ffffff',
-                color: msg.type === 'user' ? tokens.colors.paper050 : tokens.colors.ink900,
-                borderColor: msg.type === 'user' ? tokens.colors.blueprint600 : tokens.colors.pencil400 + '33'
-              }}
+              className={`p-4 rounded-xl text-xs leading-relaxed border shadow-xl ${
+                msg.type === 'user'
+                  ? 'bg-[#2B4C7E]/30 border-[#2B4C7E] text-[#F2F0EC]'
+                  : 'bg-[#14171F] border-[#C9A227]/20 text-[#F2F0EC]'
+              }`}
             >
-              {/* Subticks in corners for layout logs */}
-              <span className="absolute top-0.5 left-1 text-[8px] opacity-25 font-mono select-none">+</span>
-              <span className="absolute top-0.5 right-1 text-[8px] opacity-25 font-mono select-none">+</span>
-              <span className="absolute bottom-0.5 left-1 text-[8px] opacity-25 font-mono select-none">+</span>
-              <span className="absolute bottom-0.5 right-1 text-[8px] opacity-25 font-mono select-none">+</span>
               {msg.text}
             </div>
           </div>
@@ -136,44 +155,32 @@ export default function DiscoveryLoopView({
       </div>
 
       {/* Active Question Batch Form */}
-      <form onSubmit={handleSubmitBatch} className="space-y-6 pt-4 border-t mt-4" style={{ borderColor: tokens.colors.pencil400 + '33' }}>
-        <div className="p-3 bg-zinc-100 rounded border flex items-center justify-between gap-2 border-zinc-200">
+      <form onSubmit={handleSubmitBatch} className="space-y-6 pt-4 border-t border-white/10 mt-4">
+        <div className="p-3.5 bg-[#14171F] rounded-lg border border-white/10 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-            <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest font-bold">Discovery Batch Question Queue</span>
+            <span className="w-2 h-2 rounded-full bg-[#C9A227] animate-pulse" />
+            <span className="text-[11px] font-mono text-[#F2F0EC] uppercase tracking-widest font-semibold">
+              Discovery Batch Question Queue
+            </span>
           </div>
-          <span className="text-[8px] font-mono text-zinc-400">TURN {Math.round(project.completeness / 15) + 1}</span>
+          <span className="text-[9px] font-mono text-[#7E7A72]">
+            TURN {Math.round(project.completeness / 15) + 1}
+          </span>
         </div>
 
         <div className="space-y-6 relative">
-          {/* Floating Spec Label Pointing to Queue */}
-          <div className="absolute -top-12 -left-16 hidden lg:flex items-center gap-1 pointer-events-none font-mono text-[9px] text-zinc-400 select-none">
-            <span>[SPEC_03 // ACTIVE_BATCH_FIELD]</span>
-            <svg width="35" height="15" className="opacity-45">
-              <line x1="0" y1="7" x2="30" y2="7" stroke="#8A93A3" strokeWidth="0.8" strokeDasharray="2,2" />
-              <circle cx="30" cy="7" r="1.5" fill="#8A93A3" />
-            </svg>
-          </div>
-
           {project.questions.map((q) => {
             const val = answers[q.field];
             return (
               <div 
                 key={q.id}
-                className="p-5 rounded border bg-white shadow-2xs space-y-4 relative"
-                style={{ borderColor: tokens.colors.pencil400 + '44' }}
+                className="p-5 rounded-xl border border-white/10 bg-[#14171F] shadow-xl space-y-4 hover:border-[#C9A227]/30 transition-all"
               >
-                {/* Card Ticks */}
-                <span className="absolute top-1 left-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-                <span className="absolute top-1 right-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-                <span className="absolute bottom-1 left-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-                <span className="absolute bottom-1 right-1.5 text-[8px] font-mono text-zinc-300 pointer-events-none select-none">[+]</span>
-
                 <div className="space-y-1">
-                  <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider block">
+                  <span className="text-[9px] font-mono text-[#C9A227] uppercase tracking-wider block font-semibold">
                     Field Target: {FIELD_LABELS[q.field] || q.field}
                   </span>
-                  <h3 className="font-semibold text-xs leading-normal" style={{ color: tokens.colors.ink900 }}>
+                  <h3 className="font-serif text-sm leading-snug text-[#F2F0EC]">
                     {q.text}
                   </h3>
                 </div>
@@ -188,14 +195,11 @@ export default function DiscoveryLoopView({
                           type="button"
                           key={opt}
                           onClick={() => toggleChipSelection(q.field, opt, false)}
-                          className={`px-3 py-1.5 rounded text-xs border font-medium transition-all ${
+                          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all ${
                             isSelected 
-                              ? 'border-transparent text-white' 
-                              : 'border-zinc-300 text-zinc-700 bg-white hover:bg-zinc-50 shadow-2xs'
+                              ? 'bg-[#C9A227] text-[#0B0D12] font-bold border border-[#C9A227]' 
+                              : 'bg-[#0B0D12] text-[#C4C0B6] border border-white/10 hover:border-[#C9A227]/40 hover:text-[#F2F0EC]'
                           }`}
-                          style={{
-                            backgroundColor: isSelected ? tokens.colors.blueprint600 : undefined
-                          }}
                         >
                           {opt}
                         </button>
@@ -215,14 +219,11 @@ export default function DiscoveryLoopView({
                           type="button"
                           key={opt}
                           onClick={() => toggleChipSelection(q.field, opt, true)}
-                          className={`px-3 py-1.5 rounded text-xs border font-medium transition-all ${
+                          className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all ${
                             isSelected 
-                              ? 'border-transparent text-white' 
-                              : 'border-zinc-300 text-zinc-700 bg-white hover:bg-zinc-50 shadow-2xs'
+                              ? 'bg-[#C9A227] text-[#0B0D12] font-bold border border-[#C9A227]' 
+                              : 'bg-[#0B0D12] text-[#C4C0B6] border border-white/10 hover:border-[#C9A227]/40 hover:text-[#F2F0EC]'
                           }`}
-                          style={{
-                            backgroundColor: isSelected ? tokens.colors.blueprint600 : undefined
-                          }}
                         >
                           {opt}
                         </button>
@@ -239,19 +240,20 @@ export default function DiscoveryLoopView({
                       placeholder={q.placeholder || "Type your response..."}
                       value={val || ''}
                       onChange={(e) => setAnswers(prev => ({ ...prev, [q.field]: e.target.value }))}
-                      className="w-full p-2.5 border rounded outline-none text-xs transition-all bg-zinc-50 focus:bg-white"
-                      style={{ borderColor: tokens.colors.pencil400 + '66' }}
+                      className="w-full p-3 border border-white/10 rounded-lg outline-none text-xs bg-[#0B0D12] text-[#F2F0EC] placeholder-[#7E7A72] focus:border-[#C9A227]/50 transition-all"
                     />
                     {q.options && q.options.length > 0 && (
                       <div className="space-y-1.5">
-                        <span className="text-[9px] font-mono uppercase text-zinc-400 font-bold block tracking-wider">Suggested Prefills:</span>
+                        <span className="text-[9px] font-mono uppercase text-[#7E7A72] font-semibold block tracking-wider">
+                          Suggested Prefills:
+                        </span>
                         <div className="flex flex-wrap gap-2">
                           {q.options.map((opt) => (
                             <button
                               type="button"
                               key={opt}
                               onClick={() => setAnswers(prev => ({ ...prev, [q.field]: opt }))}
-                              className="px-2.5 py-1 rounded-full text-[10px] border border-zinc-200 text-zinc-600 bg-zinc-50 hover:bg-zinc-100 transition-all shadow-3xs"
+                              className="px-3 py-1 rounded-full text-[10px] border border-white/10 text-[#C4C0B6] bg-[#0B0D12] hover:border-[#C9A227]/40 hover:text-[#F2F0EC] transition-all"
                             >
                               {opt}
                             </button>
@@ -270,11 +272,7 @@ export default function DiscoveryLoopView({
           <button
             type="submit"
             disabled={loading}
-            className="px-5 py-2.5 rounded font-bold text-xs uppercase transition-all tracking-wider disabled:opacity-40 hover:brightness-95"
-            style={{
-              backgroundColor: tokens.colors.blueprint600,
-              color: tokens.colors.paper050
-            }}
+            className="px-6 py-3 rounded-lg font-mono font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-40 bg-[#C9A227] text-[#0B0D12] hover:bg-[#A6841C] shadow-lg shadow-[#C9A227]/10"
           >
             {loading ? 'Submitting...' : 'Submit Answers'}
           </button>
