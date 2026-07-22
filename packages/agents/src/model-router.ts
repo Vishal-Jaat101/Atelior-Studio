@@ -93,6 +93,12 @@ export const ROUTER_CONFIG: Record<string, ProviderConfig> = {
     modelEnvVar: 'OPENROUTER_MODEL',
     defaultModel: 'meta-llama/llama-3-8b-instruct',
   },
+  asset: {
+    provider: 'google',
+    apiKeyEnvVar: 'GOOGLE_AI_API_KEY',
+    modelEnvVar: 'GOOGLE_MODEL',
+    defaultModel: 'gemini-2.5-flash',
+  },
 };
 
 const FALLBACK_CONFIG: ProviderConfig = {
@@ -116,8 +122,12 @@ export class ModelRouter {
     maxTokens?: number;
   }): Promise<{ content: string; providerUsed: string; modelUsed: string }> {
     const config = ROUTER_CONFIG[options.agentName] || FALLBACK_CONFIG;
-    const primaryApiKey = process.env[config.apiKeyEnvVar] || '';
+    const rawApiKey = process.env[config.apiKeyEnvVar] || '';
     const primaryModel = process.env[config.modelEnvVar] || config.defaultModel;
+
+    // Detect placeholder/template values (e.g. "your_google_ai_api_key_here") and treat as unconfigured
+    const isPlaceholder = (val: string) => !val || val.startsWith('your_') || val.endsWith('_here');
+    const primaryApiKey = isPlaceholder(rawApiKey) ? '' : rawApiKey;
 
     // If no key is set for the primary provider, fall back immediately to NVIDIA NIM
     if (!primaryApiKey && config.provider !== 'nim') {

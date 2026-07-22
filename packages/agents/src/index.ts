@@ -28,4 +28,7 @@ export { PitchVideoAgent } from './pitch-video-agent/index.js';
 export type { PitchVideoInput } from './pitch-video-agent/index.js';
 export * from './pitch-video-agent/types.js';
 
+export { AssetAgent } from './asset-agent/index.js';
+export * from './asset-agent/types.js';
+
 export { ModelRouter, ROUTER_CONFIG } from './model-router.js';
