@@ -29,7 +29,7 @@ export const ROUTER_CONFIG: Record<string, ProviderConfig> = {
     baseURL: 'https://api.mistral.ai/v1',
     apiKeyEnvVar: 'MISTRAL_API_KEY',
     modelEnvVar: 'MISTRAL_REASONING_MODEL',
-    defaultModel: 'pixtral-12b-2409',
+    defaultModel: 'mistral-medium-3-5',
   },
   design: {
     provider: 'cohere',
@@ -66,11 +66,11 @@ export const ROUTER_CONFIG: Record<string, ProviderConfig> = {
     defaultModel: 'llama3.1-70b',
   },
   testing: {
-    provider: 'nim',
-    baseURL: 'https://integrate.api.nvidia.com/v1',
-    apiKeyEnvVar: 'NVIDIA_NIM_API_KEY',
-    modelEnvVar: 'NIM_MODEL_NAME',
-    defaultModel: 'nvidia/llama-3.1-nemotron-70b-instruct',
+    provider: 'github',
+    baseURL: 'https://models.inference.ai.azure.com',
+    apiKeyEnvVar: 'GITHUB_MODELS_TOKEN',
+    modelEnvVar: 'GITHUB_VISION_MODEL',
+    defaultModel: 'gpt-4o-mini',
   },
   negotiation: {
     provider: 'cloudflare',
@@ -100,7 +100,7 @@ const FALLBACK_CONFIG: ProviderConfig = {
   baseURL: 'https://integrate.api.nvidia.com/v1',
   apiKeyEnvVar: 'NVIDIA_NIM_API_KEY',
   modelEnvVar: 'NIM_MODEL_NAME',
-  defaultModel: 'nvidia/llama-3.1-nemotron-70b-instruct',
+  defaultModel: 'nvidia/nemotron-3-super-120b-a12b',
 };
 
 export class ModelRouter {
