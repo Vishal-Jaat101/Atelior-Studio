@@ -165,6 +165,19 @@ export class ModelRouter {
     }
   }
 
+  private static withTimeout<T>(promise: Promise<T>, timeoutMs: number = 12000, providerName: string): Promise<T> {
+    let timeoutId: any;
+    const timeoutPromise = new Promise<T>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error(`Provider call timed out after ${timeoutMs}ms (${providerName})`));
+      }, timeoutMs);
+    });
+
+    return Promise.race([promise, timeoutPromise]).finally(() => {
+      clearTimeout(timeoutId);
+    });
+  }
+
   private static async executeGoogle(apiKey: string, model: string, options: any): Promise<string> {
     const ai = new GoogleGenAI({ apiKey });
     const messages = options.messages || [];
@@ -202,7 +215,7 @@ export class ModelRouter {
 
     const responseFormat = options.responseFormat?.type === 'json_object' ? 'application/json' : undefined;
 
-    const response = await ai.models.generateContent({
+    const callPromise = ai.models.generateContent({
       model,
       contents,
       config: {
@@ -211,13 +224,13 @@ export class ModelRouter {
         responseMimeType: responseFormat,
         maxOutputTokens: options.maxTokens,
       },
-    });
+    }).then(res => res.text || '');
 
-    return response.text || '';
+    return this.withTimeout(callPromise, 12000, 'google');
   }
 
   private static async executeCohere(apiKey: string, model: string, options: any): Promise<string> {
-    const cohere = new CohereClient({ token: apiKey });
+    const cohere = new CohereClient({ token: apiKey, timeoutInSeconds: 12 });
     const messages = options.messages || [];
 
     const systemInstruction = messages.find((m: any) => m.role === 'system')?.content || '';
@@ -230,15 +243,15 @@ export class ModelRouter {
 
     const lastMessage = chatHistory.pop()?.message || '';
 
-    const response = await cohere.chat({
+    const callPromise = cohere.chat({
       model,
       message: lastMessage,
       chatHistory: chatHistory as any,
       preamble: systemInstruction || undefined,
       temperature: options.temperature ?? 0.2,
-    });
+    }).then(res => res.text || '');
 
-    return response.text || '';
+    return this.withTimeout(callPromise, 12000, 'cohere');
   }
 
   private static async executeOpenAICompatible(
@@ -248,7 +261,7 @@ export class ModelRouter {
     model: string,
     options: any
   ): Promise<string> {
-    const client = new OpenAI({ apiKey, baseURL });
+    const client = new OpenAI({ apiKey, baseURL, timeout: 12000 });
     const reqOptions: any = {
       model,
       messages: options.messages,
@@ -262,8 +275,8 @@ export class ModelRouter {
       reqOptions.max_tokens = options.maxTokens;
     }
 
-    const response = await client.chat.completions.create(reqOptions);
-    return response.choices[0]?.message?.content || '';
+    const callPromise = client.chat.completions.create(reqOptions).then(res => res.choices[0]?.message?.content || '');
+    return this.withTimeout(callPromise, 12000, providerName);
   }
 
   private static async executeNIMFallback(options: any, originalError: string): Promise<{ content: string; providerUsed: string; modelUsed: string }> {
@@ -275,7 +288,7 @@ export class ModelRouter {
       throw new Error(`Fallback failed: NVIDIA_NIM_API_KEY not configured. Original error: ${originalError}`);
     }
 
-    const client = new OpenAI({ apiKey: nimKey, baseURL: nimBaseUrl });
+    const client = new OpenAI({ apiKey: nimKey, baseURL: nimBaseUrl, timeout: 12000 });
     const reqOptions: any = {
       model: nimModel,
       messages: options.messages,
@@ -289,11 +302,12 @@ export class ModelRouter {
       reqOptions.max_tokens = options.maxTokens;
     }
 
-    const response = await client.chat.completions.create(reqOptions);
-    return {
-      content: response.choices[0]?.message?.content || '',
+    const callPromise = client.chat.completions.create(reqOptions).then(res => ({
+      content: res.choices[0]?.message?.content || '',
       providerUsed: 'nim',
       modelUsed: nimModel,
-    };
+    }));
+
+    return this.withTimeout(callPromise, 12000, 'nim');
   }
 }
