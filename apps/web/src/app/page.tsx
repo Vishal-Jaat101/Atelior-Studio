@@ -1031,6 +1031,7 @@ export default function DiscoveryWorkspacePage() {
                 }}
                 loading={loading}
                 tokens={tokens}
+                initialPrompt={initialPrompt}
               />
             )}
           </AnimatePresence>

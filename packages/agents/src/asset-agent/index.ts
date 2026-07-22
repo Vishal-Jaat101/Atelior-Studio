@@ -59,7 +59,21 @@ export class AssetAgent {
       console.warn('[AssetAgent] Query formulation failed, using direct prompt:', err.message);
     }
 
-    return description.split(/\s+/).slice(0, 4).join(' ');
+    // Fallback: simple keyword extraction (filter stop words, take nouns)
+    const stopWords = new Set([
+      'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+      'of', 'with', 'by', 'from', 'as', 'is', 'it', 'that', 'this', 'i',
+      'we', 'you', 'my', 'our', 'your', 'not', 'so', 'if', 'then',
+      'want', 'need', 'build', 'create', 'make', 'app', 'website', 'web',
+      'application', 'platform', 'using', 'use', 'like',
+    ]);
+    return description
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .split(/\s+/)
+      .filter(w => w.length > 2 && !stopWords.has(w))
+      .slice(0, 3)
+      .join(' ') || 'furniture';
   }
 
   /**
@@ -175,8 +189,11 @@ export class AssetAgent {
     if (rawBuffer[0] === 0x50 && rawBuffer[1] === 0x4b) {
       // PK zip header
       const zip = await JSZip.loadAsync(rawBuffer);
-      const glbFile = Object.values(zip.files).find((f) => f.name.endsWith('.glb') || f.name.endsWith('.gltf'));
+      // Prefer .glb file inside zip over .gltf
+      const glbFile = Object.values(zip.files).find((f) => f.name.toLowerCase().endsWith('.glb')) ||
+                      Object.values(zip.files).find((f) => f.name.toLowerCase().endsWith('.gltf'));
       if (glbFile) {
+        console.log(`[AssetAgent] Extracted ${glbFile.name} from Sketchfab ZIP package`);
         glbBuffer = Buffer.from(await glbFile.async('nodebuffer'));
       }
     }
@@ -198,10 +215,8 @@ export class AssetAgent {
         resample()
       );
 
-      // Compute scale normalization: scale root nodes so max dimension is 1.0
       const scene = doc.getRoot().getDefaultScene() || doc.getRoot().listScenes()[0];
       if (scene) {
-        // Apply uniform unit scale calibration metadata
         scaleNormalized = true;
         centerNormalized = true;
       }
@@ -213,37 +228,44 @@ export class AssetAgent {
     }
 
     // 5. Save GLB file to disk / public storage
-    // Find monorepo root using turbo.json marker file
-    let repoRoot = __dirname;
-    while (repoRoot && repoRoot !== path.dirname(repoRoot)) {
-      if (fs.existsSync(path.join(repoRoot, 'turbo.json'))) {
-        break;
+    // Walk up from process.cwd() and __dirname to find monorepo root (marked by turbo.json)
+    const findRepoRoot = (startDir: string): string | null => {
+      let curr = startDir;
+      while (curr && curr !== path.dirname(curr)) {
+        if (fs.existsSync(path.join(curr, 'turbo.json'))) {
+          return curr;
+        }
+        curr = path.dirname(curr);
       }
-      repoRoot = path.dirname(repoRoot);
-    }
+      return null;
+    };
+
+    const repoRoot = findRepoRoot(process.cwd()) || findRepoRoot(__dirname) || process.cwd();
+    const filename = `${modelUid}-${Date.now()}.glb`;
 
     const webPublicDir = path.resolve(repoRoot, 'apps/web/public/uploads/assets');
     const agentPublicDir = path.resolve(repoRoot, 'packages/agents/public/uploads/assets');
-    const targetDir = outputDir || webPublicDir;
-    
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
+
+    // Ensure all target directories exist and write synchronously
+    const targetDirs = [webPublicDir, agentPublicDir];
+    if (outputDir && !targetDirs.includes(outputDir)) {
+      targetDirs.push(outputDir);
     }
 
-    const filename = `${modelUid}-${Date.now()}.glb`;
-    const filePath = path.join(targetDir, filename);
-    fs.writeFileSync(filePath, processedBuffer);
-    console.log('[AssetAgent] GLB file successfully written to disk:', filePath);
+    for (const dir of targetDirs) {
+      try {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        const filePath = path.join(dir, filename);
+        fs.writeFileSync(filePath, processedBuffer);
+        console.log(`[AssetAgent] GLB file written to disk (${processedBuffer.length} bytes):`, filePath);
+      } catch (writeErr: any) {
+        console.error(`[AssetAgent] Failed to write asset to ${dir}:`, writeErr.message);
+      }
+    }
 
     const publicUrl = `/uploads/assets/${filename}`;
-
-    // Also mirror to webPublicDir if outputDir was custom or running outside apps/web
-    if (targetDir !== webPublicDir) {
-      if (!fs.existsSync(webPublicDir)) {
-        fs.mkdirSync(webPublicDir, { recursive: true });
-      }
-      fs.writeFileSync(path.join(webPublicDir, filename), processedBuffer);
-    }
 
     // 6. Build mandatory CC Attribution metadata
     const authorName = details.user?.username || details.user?.displayName || 'Unknown Author';

@@ -12,10 +12,45 @@ interface Dynamic3DAssetViewerProps {
     targetAudience?: string;
     description?: string;
   };
+  /** The original user prompt / project description — used as a last-resort fallback for keyword extraction */
+  projectDescription?: string;
   className?: string;
 }
 
-export function Dynamic3DAssetViewer({ projectId, brief, className = '' }: Dynamic3DAssetViewerProps) {
+// Stop words to filter out when extracting search keywords from brief text
+const STOP_WORDS = new Set([
+  'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+  'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'be',
+  'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
+  'would', 'could', 'should', 'may', 'might', 'must', 'shall', 'can',
+  'it', 'its', 'that', 'this', 'these', 'those', 'i', 'we', 'you', 'they',
+  'my', 'our', 'your', 'their', 'not', 'no', 'so', 'if', 'then', 'than',
+  'when', 'where', 'how', 'what', 'which', 'who', 'whom', 'each', 'every',
+  'all', 'both', 'few', 'more', 'most', 'other', 'some', 'such', 'only',
+  'also', 'just', 'about', 'up', 'out', 'into',
+  // UI/app generic terms to skip
+  'website', 'web', 'app', 'application', 'site', 'page', 'feature', 'features',
+  'build', 'create', 'make', 'want', 'need', 'include', 'includes', 'using',
+  'interactive', 'immersive', 'view', 'viewer', 'rendering', 'render',
+  '3d', 'three', 'model', 'product', 'preview', 'display', 'show',
+  'viewport', 'cursor', 'toggles', 'toggle', 'toggle',
+]);
+
+/**
+ * Extract meaningful search keywords from arbitrary text.
+ * Removes stop words, retains nouns/adjectives likely to match 3D model names.
+ */
+function extractKeywords(text: string, maxKeywords = 3): string {
+  const words = text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !STOP_WORDS.has(w));
+
+  return words.slice(0, maxKeywords).join(' ');
+}
+
+export function Dynamic3DAssetViewer({ projectId, brief, projectDescription, className = '' }: Dynamic3DAssetViewerProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [assetData, setAssetData] = useState<{
@@ -26,32 +61,60 @@ export function Dynamic3DAssetViewer({ projectId, brief, className = '' }: Dynam
     queryUsed: string;
   } | null>(null);
 
-  // Extract 3D search term from brief
+  // Extract 3D search term from brief — improved to actually extract meaningful nouns
   const extractSearchTerm = (): string => {
-    if (!brief) return '3d model';
+    if (!brief && !projectDescription) return 'furniture';
 
     const allFeatures = [
-      ...(brief.mustHaveFeatures || []),
-      ...(brief.niceToHaveFeatures || []),
+      ...(brief?.mustHaveFeatures || []),
+      ...(brief?.niceToHaveFeatures || []),
     ];
 
-    // Look for explicit 3D feature mention
+    // Strategy 1: Look for explicit 3D feature mention in features
     const explicit3D = allFeatures.find((f) =>
-      /3d|three-d|model|mesh|viewer|render|viewport|interactive|shoe|chair|car|product/i.test(f)
+      /3d|three-d|model|mesh|viewer|render|viewport|shoe|chair|car|sneaker|helmet|camera/i.test(f)
     );
 
     if (explicit3D) {
-      // Clean up description string to produce short keyword query
-      return explicit3D
-        .replace(/3d|interactive|rendering|viewport|viewer|with|that|toggles|cursor|preview/gi, '')
-        .trim() || explicit3D;
+      const keywords = extractKeywords(explicit3D);
+      if (keywords.length > 0) {
+        console.log(`[Dynamic3DAssetViewer] Extracted keywords from 3D feature: "${keywords}" (from: "${explicit3D}")`);
+        return keywords;
+      }
     }
 
-    if (brief.coreUserFlow && /3d|model|mesh/i.test(brief.coreUserFlow)) {
-      return brief.coreUserFlow.slice(0, 40);
+    // Strategy 2: Extract from coreUserFlow if it mentions 3D objects
+    if (brief?.coreUserFlow && /3d|model|mesh|sneaker|shoe|chair|car|helmet/i.test(brief.coreUserFlow)) {
+      const keywords = extractKeywords(brief.coreUserFlow);
+      if (keywords.length > 0) return keywords;
     }
 
-    return allFeatures[0] || brief.description || '3d model';
+    // Strategy 3: Extract meaningful nouns from targetAudience
+    if (brief?.targetAudience) {
+      const keywords = extractKeywords(brief.targetAudience, 2);
+      if (keywords.length > 0) {
+        console.log(`[Dynamic3DAssetViewer] Extracted keywords from target audience: "${keywords}"`);
+        return keywords;
+      }
+    }
+
+    // Strategy 4: Use the original user prompt / project description
+    if (projectDescription) {
+      const keywords = extractKeywords(projectDescription);
+      if (keywords.length > 0) {
+        console.log(`[Dynamic3DAssetViewer] Extracted keywords from project description: "${keywords}" (from: "${projectDescription}")`);
+        return keywords;
+      }
+    }
+
+    // Strategy 5: Use first non-empty feature
+    if (allFeatures.length > 0) {
+      const keywords = extractKeywords(allFeatures[0]);
+      if (keywords.length > 0) return keywords;
+    }
+
+    // Final fallback
+    return 'furniture';
   };
 
   useEffect(() => {
@@ -65,11 +128,11 @@ export function Dynamic3DAssetViewer({ projectId, brief, className = '' }: Dynam
       try {
         console.log(`[Dynamic3DAssetViewer] Searching Sketchfab for brief query: "${searchTerm}"...`);
         
-        // 1. Search Sketchfab via /api/asset/search
+        // 1. Search Sketchfab via /api/asset/search — pass `query` directly to skip LLM query generation
         const searchRes = await fetch('/api/asset/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: searchTerm }),
+          body: JSON.stringify({ query: searchTerm }),
         });
 
         if (!searchRes.ok) {
@@ -96,7 +159,16 @@ export function Dynamic3DAssetViewer({ projectId, brief, className = '' }: Dynam
         });
 
         if (!selectRes.ok) {
-          throw new Error(`Asset select API returned status ${selectRes.status}`);
+          // Don't crash — show the search results without download
+          const errorText = await selectRes.text();
+          console.warn(`[Dynamic3DAssetViewer] Asset download failed (${selectRes.status}): ${errorText}`);
+          
+          // Fall back to showing model info without 3D render
+          if (isMounted) {
+            setError(`Found "${topModel.name}" on Sketchfab but download requires SKETCHFAB_API_TOKEN. Search query: "${searchTerm}"`);
+            setLoading(false);
+          }
+          return;
         }
 
         const selectJson = await selectRes.json();
@@ -140,7 +212,7 @@ export function Dynamic3DAssetViewer({ projectId, brief, className = '' }: Dynam
     return () => {
       isMounted = false;
     };
-  }, [projectId, JSON.stringify(brief?.mustHaveFeatures), JSON.stringify(brief?.niceToHaveFeatures)]);
+  }, [projectId, JSON.stringify(brief?.mustHaveFeatures), JSON.stringify(brief?.niceToHaveFeatures), projectDescription]);
 
   if (loading) {
     return (
@@ -150,7 +222,7 @@ export function Dynamic3DAssetViewer({ projectId, brief, className = '' }: Dynam
           Searching Sketchfab Data API for 3D Asset...
         </div>
         <div className="text-[10px] font-mono text-[#7E7A72]">
-          Brief Query: "{extractSearchTerm()}"
+          Brief Query: &quot;{extractSearchTerm()}&quot;
         </div>
       </div>
     );
@@ -158,12 +230,12 @@ export function Dynamic3DAssetViewer({ projectId, brief, className = '' }: Dynam
 
   if (error || !assetData) {
     return (
-      <div className={`relative w-full p-4 rounded-xl bg-[#0B0D12] border border-red-500/30 text-center space-y-2 ${className}`}>
-        <div className="text-xs font-mono text-red-400">
-          ⚠️ 3D Asset Search Warning: {error || 'Could not load brief asset'}
+      <div className={`relative w-full p-4 rounded-xl bg-[#0B0D12] border border-[#C9A227]/20 text-center space-y-2 ${className}`}>
+        <div className="text-xs font-mono text-[#C9A227]">
+          ⚠️ 3D Asset: {error || 'Could not load brief asset'}
         </div>
         <div className="text-[10px] font-mono text-[#7E7A72]">
-          Query attempted: "{extractSearchTerm()}"
+          Search query used: &quot;{extractSearchTerm()}&quot;
         </div>
       </div>
     );

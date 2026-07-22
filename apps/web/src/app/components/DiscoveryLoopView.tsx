@@ -20,6 +20,7 @@ interface DiscoveryLoopViewProps {
     completeness: number;
     isComplete: boolean;
     questions: DiscoveryQuestion[];
+    brief?: Record<string, any>;
   };
   conversation: { type: 'pm' | 'user'; text: string; fields?: string[] }[];
   answers: Record<string, any>;
@@ -30,6 +31,8 @@ interface DiscoveryLoopViewProps {
   resetWorkspace: () => void;
   loading: boolean;
   tokens: any;
+  /** Original user prompt used for 3D asset keyword extraction fallback */
+  initialPrompt?: string;
 }
 
 const FIELD_LABELS: Record<string, string> = {
@@ -52,7 +55,8 @@ export default function DiscoveryLoopView({
   handleGenerateDirections,
   resetWorkspace,
   loading,
-  tokens
+  tokens,
+  initialPrompt
 }: DiscoveryLoopViewProps) {
   // Check if 3D applicability is enabled in answers or default true for test fixture
   const show3DViewer = answers.has3DApplicability === 'Yes' || answers.has3DApplicability === true || true;
@@ -74,8 +78,9 @@ export default function DiscoveryLoopView({
         {show3DViewer && (
           <div className="pt-2 pb-4">
             <Dynamic3DAssetViewer
-              projectId={project.id}
+              projectId={project.projectId}
               brief={project.brief}
+              projectDescription={initialPrompt}
               className="max-h-[380px]"
             />
           </div>
@@ -113,8 +118,9 @@ export default function DiscoveryLoopView({
       {show3DViewer && (
         <div className="mb-2">
           <Dynamic3DAssetViewer
-            projectId={project.id}
+            projectId={project.projectId}
             brief={project.brief}
+            projectDescription={initialPrompt}
           />
         </div>
       )}
