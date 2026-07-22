@@ -213,7 +213,19 @@ export class AssetAgent {
     }
 
     // 5. Save GLB file to disk / public storage
-    const targetDir = outputDir || path.resolve(process.cwd(), 'public/uploads/assets');
+    // Find monorepo root using turbo.json marker file
+    let repoRoot = __dirname;
+    while (repoRoot && repoRoot !== path.dirname(repoRoot)) {
+      if (fs.existsSync(path.join(repoRoot, 'turbo.json'))) {
+        break;
+      }
+      repoRoot = path.dirname(repoRoot);
+    }
+
+    const webPublicDir = path.resolve(repoRoot, 'apps/web/public/uploads/assets');
+    const agentPublicDir = path.resolve(repoRoot, 'packages/agents/public/uploads/assets');
+    const targetDir = outputDir || webPublicDir;
+    
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
@@ -221,8 +233,17 @@ export class AssetAgent {
     const filename = `${modelUid}-${Date.now()}.glb`;
     const filePath = path.join(targetDir, filename);
     fs.writeFileSync(filePath, processedBuffer);
+    console.log('[AssetAgent] GLB file successfully written to disk:', filePath);
 
     const publicUrl = `/uploads/assets/${filename}`;
+
+    // Also mirror to webPublicDir if outputDir was custom or running outside apps/web
+    if (targetDir !== webPublicDir) {
+      if (!fs.existsSync(webPublicDir)) {
+        fs.mkdirSync(webPublicDir, { recursive: true });
+      }
+      fs.writeFileSync(path.join(webPublicDir, filename), processedBuffer);
+    }
 
     // 6. Build mandatory CC Attribution metadata
     const authorName = details.user?.username || details.user?.displayName || 'Unknown Author';
