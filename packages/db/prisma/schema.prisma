@@ -20,6 +20,24 @@ model Project {
   assets             Asset[]
   deployments        Deployment[]
   artifactLogs       ArtifactLog[]
+  sourceDocuments    SourceDocument[]
+  conceptVariants    ConceptVariant[]
+  agentNegotiations  AgentNegotiation[]
+  projectOutcomeSignal ProjectOutcomeSignal?
+  experiments        ExperimentVariant[]
+  pitchVideos        PitchVideo[]
+}
+
+model SourceDocument {
+  id                 String   @id @default(uuid())
+  projectId          String
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type               String   // "image" | "pdf" | "pptx" | "docx" | "video"
+  fileName           String
+  extractedContent   Json     // raw extracted text/structure
+  derivedBriefFields Json     // mapped LivingBrief field values
+  confidence         Float    // 0.0–1.0
+  createdAt          DateTime @default(now())
 }
 
 model LivingBrief {
@@ -114,3 +132,94 @@ model ArtifactLog {
   path      String
   createdAt DateTime @default(now())
 }
+
+enum ConceptStatus {
+  SURVIVOR
+  ELIMINATED
+  SELECTED
+}
+
+model ConceptVariant {
+  id                    String        @id @default(uuid())
+  projectId             String
+  project               Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  axis                  String        // "editorial" | "spatial" | "minimal" | "bold" | "metaphor"
+  passedCritiqueGate    Boolean
+  distinctivenessScore  Float
+  coherenceScore        Float
+  status                ConceptStatus
+  tokenPreview          Json          // preview design tokens for this direction
+  createdAt             DateTime      @default(now())
+}
+
+model AgentNegotiation {
+  id              String    @id @default(uuid())
+  projectId       String
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  taskId          String?   // optional reference to task
+  agentsInvolved  String[]
+  conflictSummary String
+  userDecision    String?
+  resolvedAt      DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+model ProjectOutcomeSignal {
+  id                        String   @id @default(uuid())
+  projectId                 String   @unique
+  project                   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  briefFieldReworkCounts    Json     // e.g. { targetAudience: 1, coreUserFlow: 2 }
+  discoveryQuestionsSkipped Json     // e.g. ["niceToHaveFeatures"]
+  selectedConceptAxis       String   // winning design variant axis
+  iterationRounds           Int      @default(1)
+  reachedDeployment          Boolean  @default(false)
+  createdAt                 DateTime @default(now())
+}
+
+model LearnedPrior {
+  id           String   @id @default(uuid())
+  scope        String   // "discovery" | "divergence"
+  conditionKey String   // e.g. "audience=consumer,platform=web"
+  insight      Json     // e.g. { priorityFields: [...], preferredAxes: [...] }
+  sampleSize   Int
+  updatedAt    DateTime @updatedAt
+}
+
+enum RiskTier {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ExperimentStatus {
+  TESTING
+  PROMOTED
+  REVERTED
+  AWAITING_APPROVAL
+}
+
+model ExperimentVariant {
+  id              String           @id @default(uuid())
+  projectId       String
+  project         Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  elementTargeted String           // "hero_copy" | "cta_button_text"
+  variantContent  Json             // { original: "...", variant: "..." }
+  riskTier        RiskTier
+  trafficPercent  Int              @default(0)
+  metric          String           // "click_rate" | "conversion_rate"
+  result          Json?            // { impressions, conversions, pValue, winner }
+  status          ExperimentStatus @default(TESTING)
+  startedAt       DateTime         @default(now())
+  resolvedAt      DateTime?
+}
+
+model PitchVideo {
+  id              String   @id @default(uuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  script          String   // voiceover script text
+  videoUrl        String   // URL/path to the stitched video file
+  durationSeconds Int
+  generatedAt     DateTime @default(now())
+}
+

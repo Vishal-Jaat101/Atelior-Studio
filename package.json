@@ -3,24 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "description": "Atelier — Multi-Agent Product Studio",
-  "packageManager": "npm@10.8.2",
+  "packageManager": "bun@1.3.14",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "test": "turbo run test",
-    "clean": "turbo clean"
+    "dev": "bunx turbo run dev",
+    "build": "bunx turbo run build",
+    "lint": "bunx turbo run lint",
+    "test": "bunx turbo run test",
+    "clean": "bunx turbo clean"
   },
   "devDependencies": {
-    "typescript": "^5.5.4",
-    "prettier": "^3.3.3",
-    "eslint": "^9.9.0",
-    "turbo": "^2.0.4",
+    "bun": "^1.1.18",
     "bun-types": "^1.1.18",
-    "bun": "^1.1.18"
+    "eslint": "^9.9.0",
+    "jszip": "^3.10.1",
+    "prettier": "^3.3.3",
+    "turbo": "^2.0.4",
+    "typescript": "^5.5.4"
   }
 }
