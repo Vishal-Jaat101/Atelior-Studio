@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ThreeDViewer } from './ThreeDViewer';
+import { Dynamic3DAssetViewer } from './Dynamic3DAssetViewer';
 
 interface DiscoveryQuestion {
   id: string;
@@ -69,13 +70,12 @@ export default function DiscoveryLoopView({
           All criteria have been fully resolved. The project's Living Brief is locked in. Let's run the creative divergence engine to generate 5 distinct design directions.
         </p>
 
-        {/* Embedded 3D Viewer Fixture for Completed Brief */}
+        {/* Embedded 3D Viewer for Completed Brief */}
         {show3DViewer && (
           <div className="pt-2 pb-4">
-            <ThreeDViewer
-              title="Midcentury Harvey Probber Armchair"
-              author="eireni"
-              license="CC-BY"
+            <Dynamic3DAssetViewer
+              projectId={project.id}
+              brief={project.brief}
               className="max-h-[380px]"
             />
           </div>
@@ -112,19 +112,9 @@ export default function DiscoveryLoopView({
       {/* 3D Asset Feature Hero in Discovery View when 3D Applicability is active */}
       {show3DViewer && (
         <div className="mb-2">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-mono text-[#C9A227] uppercase tracking-widest flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C9A227] animate-pulse" />
-              3D Asset Sourcing Viewport
-            </span>
-            <span className="text-[10px] font-mono text-[#7E7A72]">
-              SKETCHFAB CC-BY FIXTURE
-            </span>
-          </div>
-          <ThreeDViewer
-            title="Midcentury Harvey Probber Armchair"
-            author="eireni"
-            license="CC-BY"
+          <Dynamic3DAssetViewer
+            projectId={project.id}
+            brief={project.brief}
           />
         </div>
       )}
